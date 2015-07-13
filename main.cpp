@@ -14,7 +14,7 @@
 
 using namespace std;
 
-void output_file(vector<byte> buffer, data* input_data) // будет время вынесу в библитотеку, но это требует измениений названий библиотеки inputб поэтому пока не буду
+void output_file(vector<Byte> buffer, data* input_data) // будет время вынесу в библитотеку, но это требует измениений названий библиотеки inputб поэтому пока не буду
 {
     ofstream outf;
     //char* temp = new char[255];
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
         return 0;
     }
     int error;
-    vector<byte> buffer;
+    vector<Byte> buffer;
     if(input_data->have_input_file)
         error = reading(input_data, buffer);
     else
@@ -50,12 +50,12 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    vector<byte> result;
+    vector<Byte> result;
 
     if(input_data->type=="c")
         result = compress(buffer);
-    else
-        result = de_compress(buffer);
+//    else
+//        result = de_compress(buffer);
     output_file(result,input_data);
 
     return 0;

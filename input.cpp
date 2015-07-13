@@ -57,13 +57,13 @@ void using_any_option(int argc, char* argv[], data* input_data)
     delete opt;
 }
 
-bool reading(data* input_data, vector<byte>& buffer) // возвращает true, если ошибка
+bool reading(data* input_data, vector<Byte>& buffer) // возвращает true, если ошибка
 {
     ifstream inf;
     inf.open(input_data->input, ios::binary);
     if(!inf)
         return true;
-    byte temp;
+    Byte temp;
     while(!inf.eof())
     {
         inf >> temp;
