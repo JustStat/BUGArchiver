@@ -9,5 +9,23 @@
 #ifndef BUGArchive_Archivation_h
 #define BUGArchive_Archivation_h
 
+using namespace std;
+
+typedef unsigned char Byte;
+
+#include <vector>
+
+vector<Byte> compress(vector<Byte> input);
+vector<Byte> de_compress(vector<Byte> input);
+
+
+
+
+
+
+
+
+
+
 
 #endif
