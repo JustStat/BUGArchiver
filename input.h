@@ -7,7 +7,7 @@ using namespace std;
 typedef struct data
 {
         char* input;
-        string output;
+        char* output;
         string type; // c or d
         bool have_input_file;
 }data;
