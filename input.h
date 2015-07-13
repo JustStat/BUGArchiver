@@ -1,14 +1,18 @@
-//
-//  input.h
-//  BUGArchive
-//
-//  Created on 13.07.15.
-//  Copyright (c) 2015 Buggers. All rights reserved.
-//
+#ifndef INPUT_H_INCLUDED
+#define INPUT_H_INCLUDED
+#include <vector>
 
-#ifndef __BUGArchive__input__
-#define __BUGArchive__input__
+typedef unsigned char byte;
+using namespace std;
+typedef struct data
+{
+        char* input;
+        string output;
+        string type; // c or d
+        bool have_input_file;
+}data;
 
-#include <stdio.h>
+void using_any_option(int argc, char* argv[], data* input_data);
+bool reading(data* input_data, vector<byte>& buffer);
+#endif // INPUT_H_INCLUDED
 
-#endif /* defined(__BUGArchive__input__) */
