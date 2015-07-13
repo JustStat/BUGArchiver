@@ -66,10 +66,8 @@ bool reading(data* input_data, vector<byte>& buffer) // возвращает true, если ош
     byte temp;
     while(!inf.eof())
     {
-        cout << "!";
         inf >> temp;
         buffer.push_back(temp);
     }
-    cout << buffer.size();
     return false;
 }
