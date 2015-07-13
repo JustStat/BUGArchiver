@@ -7,11 +7,24 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include <cstdio>
 #include "input.h"
 #include "Archivation.h"
 
 using namespace std;
+
+void output_file(vector<byte> buffer, data* input_data) // будет время вынесу в библитотеку, но это требует измениений названий библиотеки inputб поэтому пока не буду
+{
+    ofstream outf;
+    //char* temp = new char[255];
+    //temp = input_data->output + ".bag";
+    outf.open(input_data->output, ios::binary);
+    for(int i=0; i<buffer.size(); i++)
+    {
+        outf << buffer[i];
+    }
+}
 
 int main(int argc, char* argv[])
 {
@@ -36,10 +49,14 @@ int main(int argc, char* argv[])
         cout <<"\nError. No such file in directory";
         return 0;
     }
-    cout << buffer.size();
-    for(int i=0; i<buffer.size(); i++)
-    {
-        cout << buffer[i] << " ";
-    }
+
+    vector<byte> result;
+
+    if(input_data->type=="c")
+        result = compress(buffer);
+    else
+        result = de_compress(buffer);
+    output_file(result,input_data);
+
     return 0;
 }
