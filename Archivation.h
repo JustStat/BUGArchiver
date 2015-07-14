@@ -17,7 +17,7 @@ typedef unsigned char Byte;
 
 bool comress(vector<Byte> in_buff, int in_buff_len, vector<Byte> &out_buff, int* out_buff_len);
 bool de_comress(vector<Byte> in_buff, vector<Byte> &out_buff, int buff_len);
-
+bool nope(vector<Byte> in_buff, vector<Byte> &out_buff);
 
 
 
