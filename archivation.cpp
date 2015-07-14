@@ -1,10 +1,3 @@
-//
-//  archivation.cpp
-//  BUGArchive
-//
-//  Created on 13.07.15.
-//  Copyright (c) 2015 Buggers. All rights reserved.
-//
 
 #include "archivation.h"
 #include <queue>
@@ -16,24 +9,25 @@ typedef struct MyTree{
   MyTree* left;
   MyTree* right;
 } Tree;
-typedef struct myTable{
+typedef struct myField{
   int count_bit;
   int bits;
-} Table;
+} Field;
 
-Table table[256];
+Field table[256];
 
 void TravelTree(Tree* t, int code, int deep){
-  if (t -> left == NULL || (*t).right == NULL){
+  if (t -> left == NULL || t -> right == NULL){
     table[t -> value].bits = code;
     table[t -> value].count_bit = deep;
   }
   if (t -> left != NULL){
-
+    TravelTree(t -> left, code | (1 << deep), deep + 1);
+    TravelTree(t -> right, code, deep + 1);
   }
 }
 
-vector <Byte> compress(vector <Byte> &input){
+vector <Byte> compress(vector <Byte> input){
   vector <Byte> res;
   int Chance[256];
   for (int i = 0; i < 256; i++){
@@ -46,7 +40,7 @@ vector <Byte> compress(vector <Byte> &input){
   }
   priority_queue < pair<Tree*, int> > heap;
 
-  for (Byte i = 0; i < 256; i++){
+  for (int i = 0; i < 256; i++){
     if (Chance[i] != 0){
       t.first = new Tree;
       t.first -> right = NULL;
@@ -72,6 +66,29 @@ vector <Byte> compress(vector <Byte> &input){
   t = heap.top();
   heap.pop();
 
-
-
+  for (int i = 0; i < 256; i++){
+    res.push_back(table[i].count_bit);
+    res.push_back(table[i].bits);
+  }
+  TravelTree(t.first, 0, 0);
+  Field f;
+  int k = 0, m = 0;
+  for (int i = 0; i < input.size(); i++){
+    f = table[input[i]];
+    res.push_back(0);
+    for (int j = 0; j < f.count_bit; j++){
+      if (k == 8){
+        k = 0;
+        res.push_back(0);
+      }
+      if (f.bits & (1 << j) != 0){
+        m = res.back();
+        m = m | (1 << k);
+        res.pop_back();
+        res.push_back(m);
+        k++;
+      }
+    }
+  }
+  return res;
 }
