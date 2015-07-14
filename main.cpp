@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
     }
     int error;
     vector<Byte> buffer;
-    if(input_data->have_input_file)
+    if(input_data->fcount==0)
         error = reading(input_data, buffer);
     else
     {
@@ -46,17 +46,19 @@ int main(int argc, char* argv[])
     }
     if(error)
     {
-        cout <<"\nError. No such file in directory";
+        cout <<"\nError. One or more files are missing in directory";
         return 0;
     }
 
     vector<Byte> result;
+    if(input_data->alg=="n")
+        nope(buffer, result);
 
-    if(input_data->type=="c")
-        result = compress(buffer);
-//    else
-//        result = de_compress(buffer);
-    output_file(result,input_data);
+/*    if(input_data->type=="c")
+        compress(buffer);
+    else
+        de_compress(buffer);
+    output_file(result,input_data);*/
 
     return 0;
 }
