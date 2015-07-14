@@ -15,6 +15,7 @@ void using_any_option(int argc, char* argv[], data* input_data)
     opt->addUsage( " -h     --help          Help " );
     opt->addUsage( " -i     --input         Name of input file " );
     opt->addUsage( " -o     --output        Name of output file " );
+    opt->addUsage( " -a    --algorithm      Type of algorithm n or h (nope or huffman)" );
     opt->addUsage( " -t     --type          Type of operation c or d (compress or decompress)" );
     opt->addUsage( "" );
 
@@ -30,11 +31,8 @@ void using_any_option(int argc, char* argv[], data* input_data)
     }
     if( opt->getValue( 'i' ) != NULL  || opt->getValue( "input" ) != NULL  )
     {
-        input_data->input=opt->getValue('i');
-        input_data->have_input_file=true;
-    }else
-    {
-        input_data->have_input_file = false;
+        input_data->input.push_back(opt->getValue('i'));
+        input_data->fcount++;
     }
     if( opt->getValue( 'o' ) != NULL  || opt->getValue( "output" ) != NULL  )
     {
@@ -42,6 +40,13 @@ void using_any_option(int argc, char* argv[], data* input_data)
     }else
     {
         input_data->output="output.bug";
+    }
+    if( opt->getValue( 'a' ) != NULL  || opt->getValue( "algorithm" ) != NULL  )
+    {
+        input_data->alg=opt->getValue('a');
+    }else
+    {
+        input_data->alg="h";
     }
     if( opt->getValue( 't' ) != NULL  || opt->getValue( "type" ) != NULL  )
     {
@@ -60,14 +65,17 @@ void using_any_option(int argc, char* argv[], data* input_data)
 bool reading(data* input_data, vector<Byte>& buffer) // возвращает true, если ошибка
 {
     ifstream inf;
-    inf.open(input_data->input, ios::binary);
-    if(!inf)
-        return true;
-    Byte temp;
-    while(!inf.eof())
+    for(int i=0; i<input_data->fcount; i++)
     {
-        inf >> temp;
-        buffer.push_back(temp);
+        inf.open(input_data->input[i], ios::binary);
+        if(!inf)
+        return true;
+        Byte temp;
+        while(!inf.eof())
+        {
+            inf >> temp;
+            buffer.push_back(temp);
+        }
     }
     return false;
 }

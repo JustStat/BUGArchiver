@@ -6,10 +6,11 @@ typedef unsigned char Byte;
 using namespace std;
 typedef struct data
 {
-        char* input;
+        vector<char*> input;
         char* output;
         string type; // c or d
-        bool have_input_file;
+        int fcount;
+        string alg;
 }data;
 
 void using_any_option(int argc, char* argv[], data* input_data);
