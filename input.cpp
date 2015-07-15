@@ -1,8 +1,10 @@
 #include <fstream>
 #include <iostream>
+#include <math.h>
 #include <string>
 #include "input.h"
 #include "anyoption.h"
+#define DIGITS "0123456789"
 
 using namespace std;
 
@@ -78,4 +80,51 @@ bool reading(data* input_data, vector<Byte>& buffer) // возвращает true, если ош
         }
     }
     return false;
+}
+vector<Byte> adder_header(vector<Byte>& buffer, data* input_data)
+{
+    vector<Byte> res;
+    //v.insert(v.end(), v2.begin(), v2.end());
+    /*res.push_back('U');
+    res.push_back('P');
+    res.push_back('A');
+    if(input_data->alg=="h")
+    {
+        res.push_back('H');
+        res.push_back('A');
+        res.push_back('F');
+        res.push_back('F');
+    }
+    res.push_back('0')//is_solid*/
+    long long int len=buffer.size();
+    while(len>0)
+    {
+        res.insert(res.begin(), DIGITS[len % 10]);
+        len=len/10;
+    }
+    res.insert(res.begin(), DIGITS[res.size()]);
+    input_data->input_len=res;
+    return res;
+}
+int char_to_digit(Byte in)
+{
+    for(int i=0; i < 10; i++)
+    {
+        if(DIGITS[i]==in)
+            return i;
+    }
+    return -1;
+}
+bool separator(vector<Byte>& buffer, data* input_data)
+{
+    int num_simb=char_to_digit(buffer[0]);
+    long long int a=0;
+    for(int i=0; i<num_simb; i++)
+    {
+        a=a+char_to_digit(buffer[i+1])*pow(10,num_simb-i-1);
+    }
+    input_data->input_len=a;
+    for(i=0;i<num_simb+1; i++)
+        buffer.erase(buffer.begin());
+    return;
 }
