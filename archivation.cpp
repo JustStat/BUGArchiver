@@ -74,7 +74,7 @@ bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
       (t -> value) = i;
       (t -> left) = NULL;
       (t -> right) = NULL;
-      q.push(make_pair(t, chance[i]));
+      q.push(make_pair(t, -chance[i]));
     }
   }
   int sum = 0;
@@ -124,5 +124,28 @@ bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
       cur |= ((table[c].bits & (1 << j) != 0) ? 1 : 0 << j);
       k++;
     }
+  }
+}
+
+bool de_comress1(vector<Byte> in_buff, vector<Byte> &out_buff, int buff_len){
+  vector < Field > alfabat;
+  Field f;
+  for (int i = 0; i < 256; i++){
+    if (in_buf[i] != 0){
+      f.value = i;
+      f.count_bit = in_buf[i];
+      alfabat.push_back(f);
+    }
+  }
+  Sort(alfabat);
+  long long lb = 0;
+  int lc = 0;
+  alfabat[0].bits = 0;
+  for (int i = 1; i < alfabat.size(); i++){
+    lb++
+    if (lc != alfabat[i].count_bit){
+      lb = lb << 1;
+    }
+    alfabat[i].bits = lb;
   }
 }
