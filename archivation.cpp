@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include "archivation.h"
 #include <queue>
 
@@ -10,91 +11,118 @@ typedef struct MyTree{
   MyTree* right;
 } Tree;
 typedef struct myField{
+  Byte value;
   int count_bit;
-  int bits;
+  long long bits;
 } Field;
+
 
 Field table[256];
 
-void TravelTree(Tree* t, int code, int deep){
+void TravelTree(Tree* t, int deep){
   if (t -> left == NULL || t -> right == NULL){
-    table[t -> value].bits = code;
+    table[t -> value].value = (t -> value);
     table[t -> value].count_bit = deep;
   }
   if (t -> left != NULL){
-    TravelTree(t -> left, code | (1 << deep), deep + 1);
-    TravelTree(t -> right, code, deep + 1);
+    TravelTree(t -> left, deep + 1);
+    TravelTree(t -> right, deep + 1);
+  }
+}
+void plus1(vector <Byte> &v){
+  int j = v.size() - 1;
+  while (v[j] != 0 && j >= 0){
+    v[j]--;
+  }
+  if (j >= 0){
+    v[j]++;
   }
 }
 
-void FreeTree(Tree* t){
-  FreeTree(t -> left);
-  FreeTree(t -> right);
-  delete t;
+int SimilFields(const Field& f1, const Field& f2){
+  if ((f1.count_bit) > f2.count_bit){
+    return -1;
+  }
+  else{
+    return (f1.count_bit == f2.count_bit && f1.value > f2.value) ? -1 : 1;
+  }
 }
 
-vector <Byte> compress(vector <Byte>& input){
-  vector <Byte> res;
-  int Chance[256];
-  for (int i = 0; i < 256; i++){
-    Chance[i] = 0;
-  }
-  pair <Tree*, int> t1, t2, t;
-
-  for (int i = 0; i < input.size(); i++){
-    Chance[input[i]]++;
-  }
-  priority_queue < pair<Tree*, int> > heap;
-
-  for (int i = 0; i < 256; i++){
-    if (Chance[i] != 0){
-      t.first = new Tree;
-      t.first -> right = NULL;
-      t.first -> right = NULL;
-      t.first -> left = NULL;
-      t.first -> value = i;
-      t.second = Chance[i];
-      heap.push(t);
+void Sort(vector <Field>& a){
+  for (int i = 0; i < a.size(); i++){
+    for (int j = i; SimilFields(a[j], a[j - 1]) > 1 && j > 0; j--){
+      Field c = a[j];
+      a[j] = a[j - 1];
+      a[j - 1] = c;
     }
   }
+}
 
-  while (heap.size() > 1){
-    t1 = heap.top();
-    heap.pop();
-    t2 = heap.top();
-    heap.pop();
-    t.second = t1.second + t2.second;
-    t.first = new Tree;
-    t.first -> left = t1.first;
-    t.first -> right = t2.first;
-    heap.push(t);
-  }
-  t = heap.top();
-  heap.pop();
-
+bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
+  int chance[256];
+  Tree* t, t1, t2;
   for (int i = 0; i < 256; i++){
-    res.push_back(table[i].count_bit);
-    res.push_back(table[i].bits);
+    chance[i] = 0;
   }
-  TravelTree(t.first, 0, 0);
-  Field f;
-  int k = 0, m = 0;
-  for (int i = 0; i < input.size(); i++){
-    f = table[input[i]];
-    res.push_back(0);
-    for (int j = 0; j < f.count_bit; j++){
-      if (k == 8){
+  for (int i = 0; i < in_buf.size(); i++){
+    chance[in_buf[i]]++;
+  }
+  priority_queue < pair<Tree*, int> > q;
+  for (int i = 0; i < 256; i++){
+    if (chance[i] != 0){
+      t = new Tree;
+      (t -> value) = i;
+      (t -> left) = NULL;
+      (t -> right) = NULL;
+      q.push(make_pair(t, chance[i]));
+    }
+  }
+  int sum = 0;
+  while (q.size() > 1){
+    sum = 0;
+    t = new Tree;
+    (t -> left) = q.top().first;
+    sum += q.top().second;
+    (t -> right) = q.top().first;
+    sum += q.top().second;
+    q.push(make_pair(t, sum));
+  }
+  t = q.top().first;
+  TravelTree(t, 0);
+  vector < Field > len;
+  for (int i = 0; i < 256; i++){
+    if (chance[i] != 0){
+      len.push_back(table[i]);
+    }
+  }
+  Sort(len);
+  long long last_code = 0;
+  int last_c = len[0].count_bit;
+  len[0].bits = 0;
+  for (int i = 1; i < len.size(); i++){
+    int j = len[i].value;
+    int c = len[i].count_bit;
+    last_code++;
+    if (last_c != c){
+      last_code = last_code << 1;
+    }
+    table[j].bits = last_code;
+  }
+  for (int i = 0; i < 256; i++){
+    out_buf.push_back(table[i].count_bit);
+  }
+  int k = 0;
+  Byte cur = 0;
+  for (int i = 0; i < in_buf.size(); i++){
+    Byte c = in_buf[i];
+    for (int j = 0; j < table[c].count_bit; j++){
+      if (k > 7){
         k = 0;
-        res.push_back(0);
+        out_buf.push_back(cur);
+        cur = 0;
       }
-      if (f.bits & (1 << j) != 0){
-        m = res.back();
-        m = m | (1 << k);
-        res.pop_back();
-        res.push_back(m);
-        k++;
-      }
+      cur |= ((table[c].bits & (1 << j) != 0) ? 1 : 0 << j);
+      k++;
     }
   }
-  return res;
 }
