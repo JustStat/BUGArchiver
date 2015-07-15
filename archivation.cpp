@@ -29,14 +29,15 @@ void TravelTree(Tree* t, int deep){
     TravelTree(t -> right, deep + 1);
   }
 }
-void plus1(vector <Byte> &v){
-  int j = v.size() - 1;
-  while (v[j] != 0 && j >= 0){
-    v[j]--;
+
+void FreeTree(Tree* t){
+  if (t -> left != NULL){
+    FreeTree(t -> left);
   }
-  if (j >= 0){
-    v[j]++;
+  if (t -> right != NULL){
+    FreeTree(t -> right);
   }
+  delete t;
 }
 
 int SimilFields(const Field& f1, const Field& f2){
@@ -89,6 +90,7 @@ bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
   }
   t = q.top().first;
   TravelTree(t, 0);
+  FreeTree(t);
   vector < Field > len;
   for (int i = 0; i < 256; i++){
     if (chance[i] != 0){
