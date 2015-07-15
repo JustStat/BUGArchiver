@@ -27,17 +27,13 @@ void TravelTree(Tree* t, int code, int deep){
   }
 }
 
-<<<<<<< HEAD
 void FreeTree(Tree* t){
   FreeTree(t -> left);
   FreeTree(t -> right);
   delete t;
 }
 
-vector <Byte> compress(vector <Byte> &input){
-=======
 vector <Byte> compress(vector <Byte>& input){
->>>>>>> origin/master
   vector <Byte> res;
   int Chance[256];
   for (int i = 0; i < 256; i++){
