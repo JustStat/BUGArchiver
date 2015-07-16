@@ -111,10 +111,10 @@ vector<Byte> adder_header(vector<Byte>& buffer, data* input_data)
 }
 bool separator(vector<Byte>& buffer, data* input_data)
 {
-    for(int i=0; i<8; i++)// сделать проверки
+    /*for(int i=0; i<8; i++)// сделать проверки
     {
         buffer.erase(buffer.begin()+1);
-    }
+    }*/
     long long a=0;
     for(int i=0; i<8; i++)
     {
