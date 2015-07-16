@@ -17,7 +17,7 @@ typedef unsigned char Byte;
 
 bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf);
 bool de_comress(vector<Byte> in_buff, vector<Byte> &out_buff, int buff_len);
-bool de_comress1(vector<Byte> in_buff, vector<Byte> &out_buff, int buff_len);
+bool de_comress1(vector<Byte> in_buf, vector<Byte> &out_buf, long long buf_len);
 bool nope(vector<Byte> in_buff, vector<Byte> &out_buff);
 
 

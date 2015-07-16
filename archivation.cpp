@@ -135,7 +135,7 @@ bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
   }
 }
 
-bool de_comress1(vector<Byte> in_buf, vector<Byte> &out_buf, int buf_len){
+bool de_comress1(vector<Byte> in_buf, vector<Byte> &out_buf, long long buf_len){
   vector < Field > alfabat;
   Field f;
   for (int i = 0; i < 256; i++){
