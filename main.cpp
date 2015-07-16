@@ -59,12 +59,12 @@ int main(int argc, char* argv[])
         {
             compress(buffer, result);
             vector<Byte> temp = adder_header(buffer, input_data);
-            result.insert(result.end(), temp.begin(), temp.end());
+            result.insert(result.begin(), temp.begin(), temp.end());
         }
         else
         {
             separator(buffer, input_data);
-            de_compress1(buffer, result,input_data->input_len);
+         //   de_compress1(buffer, result,input_data->input_len);
         }
     }
     output_file(result,input_data);

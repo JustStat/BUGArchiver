@@ -4,7 +4,6 @@
 #include <string>
 #include "input.h"
 #include "anyoption.h"
-#define DIGITS "0123456789"
 
 using namespace std;
 
@@ -75,7 +74,7 @@ bool reading(data* input_data, vector<Byte>& buffer) // возвращает true, если ош
         Byte temp;
         while(!inf.eof())
         {
-            inf >> temp;
+            inf.read((char*)&temp,sizeof(temp));
             buffer.push_back(temp);
         }
     }
@@ -85,7 +84,7 @@ vector<Byte> adder_header(vector<Byte>& buffer, data* input_data)
 {
     vector<Byte> res;
     //v.insert(v.end(), v2.begin(), v2.end());
-    /*res.push_back('U');
+    res.push_back('U');
     res.push_back('P');
     res.push_back('A');
     if(input_data->alg=="h")
@@ -95,36 +94,30 @@ vector<Byte> adder_header(vector<Byte>& buffer, data* input_data)
         res.push_back('F');
         res.push_back('F');
     }
-    res.push_back('0')//is_solid*/
-    long long int len=buffer.size();
-    while(len>0)
+    res.push_back('0');//is_solid
+    long long len=buffer.size();
+    for(int i=0; i<8; i++)
     {
-        res.insert(res.begin(), DIGITS[len % 10]);
-        len=len/10;
+        res.insert(res.begin(), len % 256);
+        len=len/256;
     }
-    res.insert(res.begin(), DIGITS[res.size()]);
     input_data->input_len=res;
     return res;
 }
-int char_to_digit(Byte in)
-{
-    for(int i=0; i < 10; i++)
-    {
-        if(DIGITS[i]==in)
-            return i;
-    }
-    return -1;
-}
 bool separator(vector<Byte>& buffer, data* input_data)
 {
-    int num_simb=char_to_digit(buffer[0]);
-    long long int a=0;
-    for(int i=0; i<num_simb; i++)
+    for(int i=0; i<8; i++)// сделать проверки
     {
-        a=a+char_to_digit(buffer[i+1])*pow(10,num_simb-i-1);
-    }
-    input_data->input_len=a;
-    for(i=0;i<num_simb+1; i++)
         buffer.erase(buffer.begin());
-    return;
+    }
+    long long a=0;
+    for(int i=0; i<8; i++)
+    {
+        a=a+buffer[i]*pow(256,8-i-1);
+    }
+    input_data->input_int_len=a;
+    for(int i=0;i<8; i++)
+        buffer.erase(buffer.begin());
+    return false;
 }
+

@@ -12,6 +12,7 @@ typedef struct data
         int fcount;
         string alg;
         vector<Byte> input_len;
+        long long input_int_len;
 }data;
 
 void using_any_option(int argc, char* argv[], data* input_data);
