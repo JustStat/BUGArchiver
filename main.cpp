@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
         else
         {
             separator(buffer, input_data);
-            de_compress1(buffer, result,input_data->input_len);
+            de_comress1(buffer, result,input_data->input_int_len);
         }
     }
     output_file(result,input_data);
