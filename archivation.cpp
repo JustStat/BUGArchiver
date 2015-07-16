@@ -125,7 +125,7 @@ bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
         out_buf.push_back(cur);
         cur = 0;
       }
-      cur |= ((table[c].bits & (1 << j) != 0) ? 1 : 0 << j);
+      cur = cur | ((((table[c].bits & (1 << j)) != 0) ? 1 : 0) << k);
       k++;
     }
   }
