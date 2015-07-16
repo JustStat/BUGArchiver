@@ -110,6 +110,7 @@ bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
     if (last_c != c){
       last_code = last_code << 1;
     }
+    last_c = c;
     table[j].bits = last_code;
   }
   for (int i = 0; i < 256; i++){
