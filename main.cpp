@@ -17,15 +17,15 @@ using namespace std;
 void output_file(vector<Byte> buffer, data* input_data) // будет время вынесу в библитотеку, но это требует измениений названий библиотеки inputб поэтому пока не буду
 {
     ofstream outf;
-    //char* temp = new char[255];
-    //temp = input_data->output + ".bag";
     outf.open(input_data->output, ios::binary);
+    Byte* temp = new Byte[buffer.size()];
     for(int i=0; i<buffer.size(); i++)
     {
-        outf << buffer[i];
+        temp[i] = buffer[i];
     }
+    outf.write((char*)temp, sizeof(Byte) * buffer.size());
+    delete temp;
 }
-
 int main(int argc, char* argv[])
 {
     data* input_data = new data;
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
         else
         {
             separator(buffer, input_data);
-         //   de_compress1(buffer, result,input_data->input_len);
+            de_compress1(buffer, result,input_data->input_len);
         }
     }
     output_file(result,input_data);

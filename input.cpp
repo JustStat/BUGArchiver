@@ -85,7 +85,7 @@ vector<Byte> adder_header(vector<Byte>& buffer, data* input_data)
 {
     vector<Byte> res;
     //v.insert(v.end(), v2.begin(), v2.end());
-    res.push_back('U');
+  /*  res.push_back('U');
     res.push_back('P');
     res.push_back('A');
     if(input_data->alg=="h")
@@ -96,6 +96,10 @@ vector<Byte> adder_header(vector<Byte>& buffer, data* input_data)
         res.push_back('F');
     }
     res.push_back('0');//is_solid
+    unsigned short int temp = input_data->fcount / 256;
+    res.insert(res.begin(), input_data->fcount % 256);
+    res.insert(res.begin(), temp);
+*/
     long long len=buffer.size();
     for(int i=0; i<8; i++)
     {
@@ -109,7 +113,7 @@ bool separator(vector<Byte>& buffer, data* input_data)
 {
     for(int i=0; i<8; i++)// сделать проверки
     {
-        buffer.erase(buffer.begin());
+        buffer.erase(buffer.begin()+1);
     }
     long long a=0;
     for(int i=0; i<8; i++)
@@ -118,7 +122,7 @@ bool separator(vector<Byte>& buffer, data* input_data)
     }
     input_data->input_int_len=a;
     for(int i=0;i<8; i++)
-        buffer.erase(buffer.begin());
+        buffer.erase(buffer.begin()+1);
     return false;
 }
 

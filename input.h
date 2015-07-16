@@ -9,7 +9,7 @@ typedef struct data
         vector<char*> input;
         char* output;
         string type; // c or d
-        int fcount;
+        unsigned short int fcount;
         string alg;
         vector<Byte> input_len;
         long long input_int_len;
