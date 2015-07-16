@@ -51,7 +51,7 @@ int SimilFields(const Field& f1, const Field& f2){
 
 void Sort(vector <Field>& a){
   for (int i = 0; i < a.size(); i++){
-    for (int j = i; SimilFields(a[j], a[j - 1]) > 1 && j > 0; j--){
+    for (int j = i; SimilFields(a[j], a[j - 1]) > 0 && j > 0; j--){
       Field c = a[j];
       a[j] = a[j - 1];
       a[j - 1] = c;
@@ -68,27 +68,29 @@ bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
   for (int i = 0; i < in_buf.size(); i++){
     chance[in_buf[i]]++;
   }
-  priority_queue < pair<Tree*, int> > q;
+  priority_queue < pair<long, Tree*> > q;
   for (int i = 0; i < 256; i++){
     if (chance[i] != 0){
       t = new Tree;
       (t -> value) = i;
       (t -> left) = NULL;
       (t -> right) = NULL;
-      q.push(make_pair(t, -chance[i]));
+      q.push(make_pair(-chance[i], t));
     }
   }
   int sum = 0;
   while (q.size() > 1){
     sum = 0;
     t = new Tree;
-    (t -> left) = q.top().first;
-    sum += q.top().second;
-    (t -> right) = q.top().first;
-    sum += q.top().second;
-    q.push(make_pair(t, sum));
+    (t -> left) = q.top().second;
+    sum += q.top().first;
+    q.pop();
+    (t -> right) = q.top().second;
+    sum += q.top().first;
+    q.pop();
+    q.push(make_pair(sum, t));
   }
-  t = q.top().first;
+  t = q.top().second;
   TravelTree(t, 0);
   FreeTree(t);
   vector < Field > len;
@@ -129,7 +131,7 @@ bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
   }
 }
 
-bool de_comress1(vector<Byte> in_buff, vector<Byte> &out_buff, int buff_len){
+bool de_comress1(vector<Byte> in_buf, vector<Byte> &out_buf, int buf_len){
   vector < Field > alfabat;
   Field f;
   for (int i = 0; i < 256; i++){
@@ -140,14 +142,52 @@ bool de_comress1(vector<Byte> in_buff, vector<Byte> &out_buff, int buff_len){
     }
   }
   Sort(alfabat);
+  Tree* t = new Tree, *curt;
   long long lb = 0;
   int lc = 0;
   alfabat[0].bits = 0;
   for (int i = 1; i < alfabat.size(); i++){
-    lb++
+    lb++;
     if (lc != alfabat[i].count_bit){
       lb = lb << 1;
     }
     alfabat[i].bits = lb;
+  }
+  for (int i = 0; i < alfabat.size(); i++){
+    curt = t;
+    for (int j = 0; j < alfabat[i].count_bit; j++){
+      if (alfabat[i].bits & (1 << j) != 0){
+        if (curt -> left == NULL){
+          curt -> left = new Tree;
+        }
+        curt = curt -> left;
+      }
+      else{
+        if (curt -> right == NULL){
+          curt -> right = new Tree;
+        }
+        curt = curt -> right;
+      }
+      curt -> value = alfabat[i].value;
+    }
+  }
+  Byte curb;
+  curt = t;
+  int readed_bytes = 0;
+  for (int i = 256; i < in_buf.size() && readed_bytes < buf_len; i++){
+    curb = in_buf[i];
+    for (int j = 0; j < 8 && readed_bytes < buf_len; j++){
+      if (curb & (1 << j) != 0){
+        curt = t -> left;
+      }
+      else{
+        curt = t -> right;
+      }
+      if (curt -> left == NULL && curt -> right == NULL){
+        out_buf.push_back(curt -> value);
+        curt = t;
+        readed_bytes++;
+      }
+    }
   }
 }
