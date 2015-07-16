@@ -77,6 +77,7 @@ bool reading(data* input_data, vector<Byte>& buffer) // возвращает true, если ош
             inf.read((char*)&temp,sizeof(temp));
             buffer.push_back(temp);
         }
+        buffer.erase(buffer.end()-1);
     }
     return false;
 }
