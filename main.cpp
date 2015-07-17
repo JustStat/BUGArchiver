@@ -21,7 +21,12 @@ void output_file(vector<Byte> buffer, data* input_data) // будет время вынесу в 
     //temp = input_data->output + ".bag";
     outf.open(input_data->output, ios::binary);
     if(input_data->type=="c")
-        outf << "UPAHUFF0";
+    {
+        outf << "UPAHUFF"<< (Byte)0 << (Byte)0 <<(Byte)10 << "output.bug";
+        for(int i=0; i<8; i++)
+            outf << (Byte)0;
+
+    }
     /*res.push_back('P');
     res.push_back('A');
     if(input_data->alg=="h")
@@ -64,6 +69,11 @@ int main(int argc, char* argv[])
         return 0;
     }
     if(error)
+    {
+        cout <<"\nError. One or more files are missing in directory";
+        return 0;
+    }
+    if(buffer.size()==0)
     {
         cout <<"\nError. One or more files are missing in directory";
         return 0;

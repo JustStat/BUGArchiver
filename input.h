@@ -13,6 +13,8 @@ typedef struct data
         string alg;
         vector<Byte> input_len;
         long long input_int_len;
+        long long output_int_len;
+        vector<Byte>output_len;
 }data;
 
 void using_any_option(int argc, char* argv[], data* input_data);

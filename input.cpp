@@ -87,11 +87,7 @@ vector<Byte> adder_header(vector<Byte>& buffer, data* input_data)
 {
     vector<Byte> res;
     //v.insert(v.end(), v2.begin(), v2.end());
-
-    unsigned short int temp = input_data->fcount / 256;
-    res.insert(res.begin(), input_data->fcount % 256);
-    res.insert(res.begin(), temp);
-    long long len=buffer.size();
+    long long len = buffer.size();
     for(int i=0; i<8; i++)
     {
         res.insert(res.begin(), len % 256);
@@ -102,13 +98,6 @@ vector<Byte> adder_header(vector<Byte>& buffer, data* input_data)
 }
 bool separator(vector<Byte>& buffer, data* input_data)
 {
-    //cout << "\n---------\nHAFF\n" <<(int)HUFF[0]<< " "  << (int)HUFF[1]<< " "  << (int)HUFF[2]<< " "  << (int)HUFF[3] << "\n---------\nUPA\n" << (int)UPA[0]<< " " << (int)UPA[1] << " " << (int)UPA[2] << "\n----------\n";
-    for(int i=0; i < buffer.size(); i++)
-    {
-        //cout << (int)buffer[i] << " " << i << "\n";
-    }
-    //cout << "---------\n";
-
     for(int i=0; i<3; i++)// сделать проверки
     {
         if(UPA[i]==buffer[0])
@@ -125,15 +114,24 @@ bool separator(vector<Byte>& buffer, data* input_data)
         else
             return true;
     }
-   /* for(int i=0; i < buffer.size(); i++)
+    buffer.erase(buffer.begin());//solid
+    unsigned short int temp;
+    temp = buffer[0]*256 + buffer[1];
+    buffer.erase(buffer.begin());
+    buffer.erase(buffer.begin());
+    //input_data->output=(char*)calloc(temp, sizeof(char));
+    for(int i = 0; i< temp; i++)
     {
-        cout << (int)buffer[i] << " " << i << "\n";
-    }*/
-    buffer.erase(buffer.begin());
-    buffer.erase(buffer.begin());
-    buffer.erase(buffer.begin());
-
+       // input_data->output[i]=buffer[0];
+        buffer.erase(buffer.begin());
+    }
     long long a=0;
+       //         for(int i=0; i< buffer.size(); i++)
+        //cout << i << " " << (int)buffer[i] << "-" << buffer[i] <<"\n";
+    for(int i=0;i<8; i++)
+    {
+        buffer.erase(buffer.begin());
+    }
     for(int i=0; i<8; i++)
     {
         a=a+buffer[i]*pow(256,8-i-1);
@@ -143,8 +141,8 @@ bool separator(vector<Byte>& buffer, data* input_data)
     {
         buffer.erase(buffer.begin());
     }
-    //Byte huff[4]="HUFF";
-    //cout << buffer.size() << "\n!";
+        //for(int i=0; i< buffer.size(); i++)
+        //cout << i << " " << (int)buffer[i] << "-" << buffer[i] <<"\n";
     return false;
-}
 
+}
