@@ -20,7 +20,8 @@ void output_file(vector<Byte> buffer, data* input_data) // будет время вынесу в 
     //char* temp = new char[255];
     //temp = input_data->output + ".bag";
     outf.open(input_data->output, ios::binary);
-    outf << "UPAHUFF0";
+    if(input_data->type=="c")
+        outf << "UPAHUFF0";
     /*res.push_back('P');
     res.push_back('A');
     if(input_data->alg=="h")
