@@ -6,7 +6,6 @@
 #include "anyoption.h"
 #define HUFF "HUFF"
 #define UPA "UPA"
-
 using namespace std;
 
 void using_any_option(int argc, char* argv[], data* input_data)
@@ -23,6 +22,7 @@ void using_any_option(int argc, char* argv[], data* input_data)
     opt->addUsage( "" );
 
     opt->setFlag(  "help", 'h' );
+    opt->setOption(  "algorithm", 'a' );
     opt->setOption(  "input", 'i' );
     opt->setOption(  "output", 'o' );
     opt->setOption(  "type", 't' );
@@ -87,23 +87,7 @@ vector<Byte> adder_header(vector<Byte>& buffer, data* input_data)
 {
     vector<Byte> res;
     //v.insert(v.end(), v2.begin(), v2.end());
-    res.push_back('U');
-    res.push_back('P');
-    res.push_back('A');
-    if(input_data->alg=="h")
-    {
-        res.push_back('H');
-        res.push_back('A');
-        res.push_back('F');
-        res.push_back('F');
-    }else
-    {
-        res.push_back('N');
-        res.push_back('O');
-        res.push_back('P');
-        res.push_back('E');
-    }
-    res.push_back('0');//is_solid
+
     unsigned short int temp = input_data->fcount / 256;
     res.insert(res.begin(), input_data->fcount % 256);
     res.insert(res.begin(), temp);
@@ -118,6 +102,37 @@ vector<Byte> adder_header(vector<Byte>& buffer, data* input_data)
 }
 bool separator(vector<Byte>& buffer, data* input_data)
 {
+    //cout << "\n---------\nHAFF\n" <<(int)HUFF[0]<< " "  << (int)HUFF[1]<< " "  << (int)HUFF[2]<< " "  << (int)HUFF[3] << "\n---------\nUPA\n" << (int)UPA[0]<< " " << (int)UPA[1] << " " << (int)UPA[2] << "\n----------\n";
+    for(int i=0; i < buffer.size(); i++)
+    {
+        //cout << (int)buffer[i] << " " << i << "\n";
+    }
+    //cout << "---------\n";
+
+    for(int i=0; i<3; i++)// сделать проверки
+    {
+        if(UPA[i]==buffer[0])
+        {
+            buffer.erase(buffer.begin());
+        }
+        else
+            return true;
+    }
+    for(int i=0; i<4; i++)// сделать проверки
+    {
+        if(HUFF[i]==buffer[0])
+            buffer.erase(buffer.begin());
+        else
+            return true;
+    }
+   /* for(int i=0; i < buffer.size(); i++)
+    {
+        cout << (int)buffer[i] << " " << i << "\n";
+    }*/
+    buffer.erase(buffer.begin());
+    buffer.erase(buffer.begin());
+    buffer.erase(buffer.begin());
+
     long long a=0;
     for(int i=0; i<8; i++)
     {
@@ -125,22 +140,11 @@ bool separator(vector<Byte>& buffer, data* input_data)
     }
     input_data->input_int_len=a;
     for(int i=0;i<8; i++)
-        buffer.erase(buffer.begin()+1);
+    {
+        buffer.erase(buffer.begin());
+    }
     //Byte huff[4]="HUFF";
-    for(int i=0; i<3; i++)// сделать проверки
-    {
-        if(UPA[i]==buffer[0])
-            buffer.erase(buffer.begin()+1);
-        else
-            return true;
-    }
-    for(int i=0; i<4; i++)// сделать проверки
-    {
-        if(HUFF[i]==buffer[0])
-            buffer.erase(buffer.begin()+1);
-        else
-            return true;
-    }
+    //cout << buffer.size() << "\n!";
     return false;
 }
 

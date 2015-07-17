@@ -20,6 +20,23 @@ void output_file(vector<Byte> buffer, data* input_data) // будет время вынесу в 
     //char* temp = new char[255];
     //temp = input_data->output + ".bag";
     outf.open(input_data->output, ios::binary);
+    outf << "UPAHUFF0";
+    /*res.push_back('P');
+    res.push_back('A');
+    if(input_data->alg=="h")
+    {
+        res.push_back('H');
+        res.push_back('A');
+        res.push_back('F');
+        res.push_back('F');
+    }else
+    {
+        res.push_back('N');
+        res.push_back('O');
+        res.push_back('P');
+        res.push_back('E');
+    }
+    res.push_back('0');//is_solid*/
     for(int i=0; i<buffer.size(); i++)
     {
         outf << buffer[i];
@@ -52,7 +69,19 @@ int main(int argc, char* argv[])
     }
     vector<Byte> result;
     if(input_data->alg=="n")
-        nope(buffer, result);
+        {
+            if(input_data->type=="c")
+        {
+            nope(buffer, result);
+            vector<Byte> temp = adder_header(buffer, input_data);
+            result.insert(result.begin(), temp.begin(), temp.end());
+        }
+        else
+        {
+            separator(buffer, input_data);
+            nope(buffer, result);
+        }
+        }
     if(input_data->alg=="h")
     {
         if(input_data->type=="c")
