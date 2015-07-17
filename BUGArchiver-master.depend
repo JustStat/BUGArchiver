@@ -9,17 +9,18 @@
 	<stdlib.h>
 	<string>
 
-1436943079 source:c:\artyomworkspace\bugarchiver\input.cpp
+1437117500 source:c:\artyomworkspace\bugarchiver\input.cpp
 	<fstream>
 	<iostream>
+	<math.h>
 	<string>
 	"input.h"
 	"anyoption.h"
 
-1436943079 c:\artyomworkspace\bugarchiver\input.h
+1437117500 c:\artyomworkspace\bugarchiver\input.h
 	<vector>
 
-1437026524 source:c:\artyomworkspace\bugarchiver\main.cpp
+1437117836 source:c:\artyomworkspace\bugarchiver\main.cpp
 	<iostream>
 	<fstream>
 	<cstdio>
@@ -32,7 +33,7 @@
 1436943079 source:c:\artyomworkspace\bugarchiver\nope.cpp
 	"Archivation.h"
 
-1437090394 source:c:\artyomworkspace\bugarchiver\archivation.cpp
+1437117803 source:c:\artyomworkspace\bugarchiver\archivation.cpp
 	<iostream>
 	<cstdlib>
 	"archivation.h"

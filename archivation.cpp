@@ -21,6 +21,9 @@ Field table[256];
 
 void TravelTree(Tree* t, int deep){
   if (t -> left == NULL || t -> right == NULL){
+    if (deep == 0){
+      deep++;
+    }
     table[t -> value].value = (t -> value);
     table[t -> value].count_bit = deep;
   }
@@ -121,13 +124,13 @@ bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
   for (int i = 0; i < in_buf.size(); i++){
     Byte c = in_buf[i];
     for (int j = 0; j < table[c].count_bit; j++){
+      cur = cur | ((((table[c].bits & (1 << j)) != 0) ? 1 : 0) << k);
+      k++;
       if (k > 7){
         k = 0;
         out_buf.push_back(cur);
         cur = 0;
       }
-      cur = cur | ((((table[c].bits & (1 << j)) != 0) ? 1 : 0) << k);
-      k++;
     }
   }
 }
