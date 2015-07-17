@@ -110,9 +110,7 @@ bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
     int j = len[i].value;
     int c = len[i].count_bit;
     last_code++;
-    if (last_c != c){
-      last_code = last_code << 1;
-    }
+    last_code = last_code << (c - last_c);
     last_c = c;
     table[j].bits = last_code;
   }
@@ -123,7 +121,7 @@ bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
   Byte cur = 0;
   for (int i = 0; i < in_buf.size(); i++){
     Byte c = in_buf[i];
-    for (int j = 0; j < table[c].count_bit; j++){
+    for (int j = table[c].count_bit - 1; j >= 0; j--){
       cur = cur | ((((table[c].bits & (1 << j)) != 0) ? 1 : 0) << k);
       k++;
       if (k > 7){
@@ -133,6 +131,16 @@ bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
       }
     }
   }
+  if (k != 0){
+    out_buf.push_back(cur);
+  }
+}
+
+Tree* GetTree(){
+  Tree* t = new Tree;
+  t -> left = NULL;
+  t -> right = NULL;
+  return t;
 }
 
 bool de_comress1(vector<Byte> in_buf, vector<Byte> &out_buf, long long buf_len){
@@ -146,46 +154,46 @@ bool de_comress1(vector<Byte> in_buf, vector<Byte> &out_buf, long long buf_len){
     }
   }
   Sort(alfabat);
-  Tree* t = new Tree, *curt;
+  Tree* t = GetTree(), *curt;
   long long lb = 0;
-  int lc = 0;
+  int lc = 1;
   alfabat[0].bits = 0;
   for (int i = 1; i < alfabat.size(); i++){
     lb++;
-    if (lc != alfabat[i].count_bit){
-      lb = lb << 1;
-    }
+    lb = lb << (alfabat[i].count_bit - lc);
     alfabat[i].bits = lb;
+    lc = alfabat[i].count_bit;
   }
   for (int i = 0; i < alfabat.size(); i++){
     curt = t;
-    for (int j = 0; j < alfabat[i].count_bit; j++){
-      if (alfabat[i].bits & (1 << j) != 0){
+    for (int j = alfabat[i].count_bit - 1; j >= 0; j--){
+      if ((alfabat[i].bits & (1 << j)) != 0){
         if (curt -> left == NULL){
-          curt -> left = new Tree;
+          curt -> left = GetTree();
         }
         curt = curt -> left;
       }
       else{
         if (curt -> right == NULL){
-          curt -> right = new Tree;
+          curt -> right = GetTree();
         }
         curt = curt -> right;
       }
-      curt -> value = alfabat[i].value;
     }
+    curt -> value = alfabat[i].value;
   }
   Byte curb;
   curt = t;
   int readed_bytes = 0;
+  int siz = in_buf.size();
   for (int i = 256; i < in_buf.size() && readed_bytes < buf_len; i++){
     curb = in_buf[i];
     for (int j = 0; j < 8 && readed_bytes < buf_len; j++){
-      if (curb & (1 << j) != 0){
-        curt = t -> left;
+      if ((curb & (1 << j)) != 0){
+        curt = curt -> left;
       }
       else{
-        curt = t -> right;
+        curt = curt -> right;
       }
       if (curt -> left == NULL && curt -> right == NULL){
         out_buf.push_back(curt -> value);
