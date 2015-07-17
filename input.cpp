@@ -118,6 +118,14 @@ vector<Byte> adder_header(vector<Byte>& buffer, data* input_data)
 }
 bool separator(vector<Byte>& buffer, data* input_data)
 {
+    long long a=0;
+    for(int i=0; i<8; i++)
+    {
+        a=a+buffer[i]*pow(256,8-i-1);
+    }
+    input_data->input_int_len=a;
+    for(int i=0;i<8; i++)
+        buffer.erase(buffer.begin()+1);
     //Byte huff[4]="HUFF";
     for(int i=0; i<3; i++)// сделать проверки
     {
@@ -133,14 +141,6 @@ bool separator(vector<Byte>& buffer, data* input_data)
         else
             return true;
     }
-    long long a=0;
-    for(int i=0; i<8; i++)
-    {
-        a=a+buffer[i]*pow(256,8-i-1);
-    }
-    input_data->input_int_len=a;
-    for(int i=0;i<8; i++)
-        buffer.erase(buffer.begin()+1);
     return false;
 }
 
