@@ -156,7 +156,7 @@ bool de_comress1(vector<Byte> in_buf, vector<Byte> &out_buf, long long buf_len){
   Sort(alfabat);
   Tree* t = GetTree(), *curt;
   long long lb = 0;
-  int lc = 1;
+  int lc = alfabat[0].count_bit;
   alfabat[0].bits = 0;
   for (int i = 1; i < alfabat.size(); i++){
     lb++;
@@ -202,4 +202,5 @@ bool de_comress1(vector<Byte> in_buf, vector<Byte> &out_buf, long long buf_len){
       }
     }
   }
+  FreeTree(t);
 }
