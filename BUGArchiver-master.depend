@@ -1,0 +1,44 @@
+# depslib dependency file v1.0
+1436857328 source:c:\artyomworkspace\bugarchiver\anyoption.cpp
+	<string.h>
+	"anyoption.h"
+
+1436857328 c:\artyomworkspace\bugarchiver\anyoption.h
+	<iostream>
+	<fstream>
+	<stdlib.h>
+	<string>
+
+1437117500 source:c:\artyomworkspace\bugarchiver\input.cpp
+	<fstream>
+	<iostream>
+	<math.h>
+	<string>
+	"input.h"
+	"anyoption.h"
+
+1437117500 c:\artyomworkspace\bugarchiver\input.h
+	<vector>
+
+1437117836 source:c:\artyomworkspace\bugarchiver\main.cpp
+	<iostream>
+	<fstream>
+	<cstdio>
+	"input.h"
+	"Archivation.h"
+
+1437025339 c:\artyomworkspace\bugarchiver\archivation.h
+	<vector>
+
+1436943079 source:c:\artyomworkspace\bugarchiver\nope.cpp
+	"Archivation.h"
+
+1437117803 source:c:\artyomworkspace\bugarchiver\archivation.cpp
+	<iostream>
+	<cstdlib>
+	"archivation.h"
+	<queue>
+
+1437025342 source:c:\artyomworkspace\bugarchiver\dearchivation.cpp
+	"Archivation.h"
+

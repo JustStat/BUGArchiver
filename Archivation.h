@@ -15,9 +15,12 @@ typedef unsigned char Byte;
 
 #include <vector>
 
-vector<Byte> compress(vector<Byte> &input);
-vector<Byte> de_compress(vector<Byte> &input);
-
+bool compress(vector <Byte>& in_buf, vector <Byte>& out_buf);
+bool de_comress(vector<Byte> in_buff, vector<Byte> &out_buff, int buff_len);
+bool de_comress1(vector<Byte> in_buf, vector<Byte> &out_buf, long long buf_len);
+bool nope(vector<Byte> in_buff, vector<Byte> &out_buff);
+bool LZ77_compress(vector <Byte>& in_buf, vector <Byte>& out_buf);
+bool LZ77_decompress(vector <Byte>& in_buf, vector <Byte>& out_buf);
 
 
 
