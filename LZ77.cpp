@@ -1,122 +1,201 @@
-//
-//  LZ77.cpp
-//  BUGArchive
-//
-//  Created by Kirill Varlamov on 16.07.15.
-//  Copyright (c) 2015 Kirill Varlamov. All rights reserved.
-//
-
+// LZ77.cpp
 #include "Archivation.h"
+#include "stdafx.h"
+#include <io.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <vector>
-#include <fstream>
-#include <iostream>
-#include <string.h>
+class TPackedFile
+{
+	int handle;
+	unsigned char buffer, mask;
+public:
+	void assign_read(int h); 
+	void assign_write(int h); 
+	void flush(); 
 
-#define LBSIZE 8
-#define SBSIZE 1024
+	void putbit(bool val); 
+	bool getbit(); 
 
-using namespace std;
+	void putbits(int val, int n);
+	int getbits(int n);
+};
 
-struct Token {
-    uint16_t offset:10;
-    uint8_t next;
-    uint8_t length:3;
-} __attribute__((packed));
-
-
-long long ReadBufToInt(int* &data, vector <Byte>& in_buf) {
-    
-    long long i = 0;
-    size_t bufLen = in_buf.size();
-    data = (int*) malloc(sizeof(int)*bufLen);
-    for (int i; i < in_buf.size(); ++i) {
-        data[i] = in_buf[i];
-    }
-    return i;
+void TPackedFile::flush()
+{
+	for (int i = 0; i < 7; i++) putbit(0);
 }
 
-bool LZ77_compress(vector <Byte>& in_buf, vector <Byte>& out_buf) {
-    int* data;
-    long long fileSize = ReadBufToInt(data, in_buf);
-    Token t = {0, 0, 0};
-    int matchLen = 0;
-    unsigned long matchPos = 0;
-    int i = 0;
-    int* searchBuffer = data;
-    int*lookAheadBuffer = data;
-    
-    do {
-        lookAheadBuffer += (matchLen + 1);
-        i += (matchLen + 1);
-        
-        t.offset = matchPos; t.length = matchLen; t.next = *(lookAheadBuffer - 1);
-        out_buf.push_back(t.offset);
-        out_buf.push_back(t.length);
-        out_buf.push_back(t.next);
-        
-        if(i >= SBSIZE) {
-            searchBuffer += (matchLen + 1);
-        } else {
-            searchBuffer = data;
-        }
-        
-        matchLen = matchPos = 0;
-        
-        for(int* p = lookAheadBuffer - 1; p >= searchBuffer; p--) {
-            int j = 0;
-            while (*(p + j) == *(lookAheadBuffer + j) && j < LBSIZE - 1)
-                j++;
-            
-            if (j > matchLen) {
-                matchLen = j;
-                matchPos = lookAheadBuffer - p;
-            }
-        }
-    } while (i < fileSize);
-    return false;
+void TPackedFile::assign_write(int h)
+{
+	handle = h;
+	buffer = 0;
+	mask = 128;
 }
 
-bool LZ77_decompress(vector <Byte>& in_buf, vector <Byte>& out_buf) {
-    size_t bufLen = SBSIZE * SBSIZE;
-    int* buf = (int*) malloc(sizeof(int)*(bufLen));
-    Token* t;
-    size_t k = 0, len = 0;
-    
-    for (int i = 0; i < in_buf.size(); i=i+3) {
-        
-        t->offset = in_buf[i];
-        t->length = in_buf[i + 1];
-        t->next = in_buf[i + 2];
-        
-        if((k + LBSIZE) >= bufLen) {
-            bufLen = bufLen*2;
-            buf = (int*) realloc(buf, sizeof(int)*bufLen);
-        }
-        
-        for(i = 0; i < len; i++) {
-            
-            if((t + i)->offset == 0) {
-                buf[k++] = (t+i)->next;
-            } else {
-                if(k - (t+i)->offset != k - 1) {
-                    memcpy(buf + k, buf + k - (t+i)->offset, sizeof(int)*((t+i)->length+1));
-                } else {
-                    for(int j = 0; j < (t+i)->length; j++) {
-                        *(buf + k + j) = *(buf + k - 1);
-                    }
-                }
-                
-                k += ((t+i)->length);
-                buf[k++] = (t+i)->next;
-                
-            }
-        }
-    }
-    for(int i = 0; i < k; i++) {
-        out_buf[i] = buf[i];
-    }
-    return false;
+void TPackedFile::assign_read(int h)
+{
+	handle = h;
+	buffer = 0;
+	mask = 0;
 }
+
+bool TPackedFile::getbit()
+{
+	if ((mask >>= 1) == 0) 
+	{
+		read(handle, &buffer, 1);
+		mask = 128;
+	}
+	return (buffer & mask) != 0;
+}
+
+void TPackedFile::putbit(bool val)
+{
+	if (val) buffer |= mask;
+	if ((mask >>= 1) == 0) 
+	{
+		write(handle, &buffer, 1);
+		buffer = 0;  
+		mask = 128;
+	}
+}
+
+void TPackedFile::putbits(int val, int n)
+{
+	int m = 1;
+	for (int i = 0; i < n; i++)
+	{
+		putbit((val & m) != 0);
+		m <<= 1;
+	}
+}
+
+int TPackedFile::getbits(int n)
+{
+	int result = 0;
+	for (int i = 0; i < n; i++)
+		result |= getbit() << i;
+	return result;
+}
+
+#define OFFS_LN 8
+#define LEN_LN 4
+#define BYTE_LN 8
+#define BUF_LEN ((1 << LEN_LN) - 1)
+#define DICT_LEN ((1 << OFFS_LN) - 1)
+
+int in_file;  
+int out_file; 
+static TPackedFile archive;
+
+char buffer[BUF_LEN + 1], dict[DICT_LEN];
+int match_pos, match_len, unmatched;
+int dict_pos = 0;
+
+int strpos(char *src, int len, char *sub, int sub_len)
+{
+	for (int i = 0; i <= len - sub_len; i++)
+		if (memcmp(src + i, sub, sub_len) == 0) return len - i;
+	return 0;
+}
+
+void add_dict(char c)
+{
+	if (dict_pos == (DICT_LEN - 1))
+	{
+		memcpy(dict, dict + 1, DICT_LEN - 1);
+		dict[dict_pos - 1] = c;
+	}
+	else
+	{
+		dict[dict_pos] = c;
+		dict_pos++;
+	}
+}
+
+void find_match()
+{
+	match_len = 0;
+	match_pos = 1;
+	while(match_len < BUF_LEN)
+	{
+		read(in_file, &buffer[match_len], 1);
+		if (eof(in_file)) break;
+		int pos1 = strpos(dict, dict_pos, buffer, match_len + 1);
+		if (pos1 == 0) break;
+		match_pos = pos1;
+		match_len++;
+	}
+	unmatched = buffer[match_len];
+}
+void encode()
+{
+	while(!eof(in_file))
+	{
+		find_match();
+		archive.putbits(match_pos, OFFS_LN);
+		archive.putbits(match_len, LEN_LN);
+		if (match_len < BUF_LEN)
+			archive.putbits(unmatched, BYTE_LN);
+		
+		for (int i = 0; i < match_len; i++)
+			add_dict(buffer[i]);
+		if (match_len < BUF_LEN)
+			add_dict(unmatched);
+	}
+	archive.putbits(0, BYTE_LN);
+	archive.flush();
+}
+
+void decode()
+{
+	char c;
+	int i;
+	for(;;)
+	{
+		match_pos = archive.getbits(OFFS_LN);
+		if (match_pos == 0) break;
+		match_len = archive.getbits(LEN_LN);
+		memcpy(buffer, dict + dict_pos - match_pos, match_len);
+		write(out_file, buffer, match_len);
+		for (i = 0; i < match_len; i++)
+			add_dict(buffer[i]);
+		if (match_len < BUF_LEN)
+		{
+			c = archive.getbits(BYTE_LN);
+			add_dict(c);
+			write(out_file, &c, 1);
+		}
+	}
+}
+
+int lz77_encode(char* input, char* output)
+{
+	in_file = open(input, _O_BINARY | _O_RDWR, 
+		_S_IREAD | _S_IWRITE);
+	out_file = open(output, _O_BINARY | _O_WRONLY | _O_CREAT
+		| _O_TRUNC, _S_IREAD | _S_IWRITE);
+	archive.assign_write(out_file);
+	encode();
+	close(in_file);
+	close(out_file);
+	return 0;
+}
+
+int lz77_decode(char* input, char* output)
+{
+	in_file = open(input, _O_BINARY | _O_RDWR, 
+		_S_IREAD | _S_IWRITE);
+	out_file = open(output, _O_BINARY | _O_WRONLY | _O_CREAT
+		| _O_TRUNC, _S_IREAD | _S_IWRITE);
+	archive.assign_read(in_file);
+	decode();
+	close(in_file);
+	close(out_file);
+	return 0;
+}
+
+
+
+
