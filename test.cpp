@@ -69,6 +69,9 @@ void archivate(const char in_file[], const char res_file[], char alg){
 		case 'l':
 			LZ77_compress(a, b);
 			break;
+		case 'w':
+			LZW_compress(a, b);
+			break;
 	}
 	cout << a.size() << endl;
 	cout << b.size() << endl;
@@ -104,6 +107,9 @@ void dearchivate(const char in_file[]){
 			break;
 		case 'l':
 			LZ77_decompress(a, b);
+			break;
+		case 'w':
+			LZW_decompress(a, b);
 			break;
 	}
 	ofstream output(res_file, ofstream::binary);
@@ -151,7 +157,7 @@ int main(int argc, char* argv[]){
 			archivate(argv[2], argv[3], alg);
 			break;
 		default:
-			cout << "ERROR: No arguments";
+			cout << "ERROR: No arguments" << endl;
 			return 1;
 			break;
 	}

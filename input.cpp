@@ -134,7 +134,7 @@ bool separator(vector<Byte>& buffer, data* input_data)
     }
     for(int i=0; i<8; i++)
     {
-        a=a+buffer[i]*pow(256,8-i-1);
+        a += buffer[i]*pow(256,8-i-1);
     }
     input_data->input_int_len=a;
     for(int i=0;i<8; i++)
