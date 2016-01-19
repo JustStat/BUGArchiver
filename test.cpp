@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <cstring>
 #include "Archivation.h"
 
 #define SIGNATURE "BUGA"
@@ -67,14 +68,12 @@ void archivate(const char in_file[], const char res_file[], char alg){
 			compress(a, b);
 			break;
 		case 'l':
-			LZ77_compress(a, b);
+			nope(a,b);
 			break;
 		case 'w':
 			LZW_compress(a, b);
 			break;
 	}
-	cout << a.size() << endl;
-	cout << b.size() << endl;
 	char* r_file = make_name(res_file);
 	Archive arch = make_archive(alg, b.size(), size, get_name_len(in_file));
 	ofstream output(r_file, ofstream::binary);
@@ -106,7 +105,8 @@ void dearchivate(const char in_file[]){
 			de_compress1(a, b, arch.source_size);
 			break;
 		case 'l':
-			LZ77_decompress(a, b);
+			nope(a,b);
+			// LZ77_decompress(a, b);
 			break;
 		case 'w':
 			LZW_decompress(a, b);
@@ -117,6 +117,18 @@ void dearchivate(const char in_file[]){
 		output.put(b[i]);
 	}
 	output.close();
+	if (arch.alg_sign == 'l'){
+		char buf[100];
+		lz77_decode(res_file, "bar.buf");
+		strcpy(buf, "del ");
+		strcat(buf, res_file);
+		system(buf);
+		strcpy(buf, "rename ");
+		strcat(buf, "bar.buf ");
+		strcat(buf, res_file);
+		system(buf);
+	}
+	delete res_file;
 }
 
 int main(int argc, char* argv[]){
@@ -154,7 +166,29 @@ int main(int argc, char* argv[]){
 			else{
 				alg = argv[1][2];
 			}
-			archivate(argv[2], argv[3], alg);
+			if (alg == 'l'){
+				char buf[100];
+				lz77_encode(argv[2], "bar.buf");
+				strcpy(buf, "rename ");
+				strcat(buf, argv[2]);
+				strcat(buf, " buf");
+				system(buf);
+				strcpy(buf, "rename ");
+				strcat(buf, "bar.buf ");
+				strcat(buf, argv[2]);
+				system(buf);
+				archivate(argv[2], argv[3], alg);
+				strcpy(buf, "del ");
+				strcat(buf, argv[2]);
+				system(buf);
+				strcpy(buf, "rename ");
+				strcat(buf, "buf ");
+				strcat(buf, argv[2]);
+				system(buf);
+			}
+			else{
+				archivate(argv[2], argv[3], alg);
+			}
 			break;
 		default:
 			cout << "ERROR: No arguments" << endl;

@@ -21,8 +21,8 @@ bool de_compress1(vector<Byte> in_buf, vector<Byte> &out_buf, long long buf_len)
 bool nope(vector<Byte> in_buff, vector<Byte> &out_buff);
 bool LZW_compress(vector <Byte>& in_buf, vector <Byte>& out_buf);
 bool LZW_decompress(vector <Byte>& in_buf, vector <Byte>& out_buf);
-int lz77_encode(char* input, char* output)
-int lz77_decode(char* input, char* output)
+int lz77_encode(char* input, char* output);
+int lz77_decode(char* input, char* output);
 
 
 

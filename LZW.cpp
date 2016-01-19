@@ -7,7 +7,7 @@
 
 using namespace std;
 
-map <string, long long> dict;
+map <string, long long> dict1;
 vector <string> dict2;
 set <string> set_dict;
 vector <long long> prov;
@@ -26,7 +26,7 @@ bool LZW_compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
 	for (int i = 0; i < 256; i++){
 		current_word = "";
 		current_word.push_back((char)i);
-		dict[current_word] = i;
+		dict1[current_word] = i;
 		set_dict.insert(current_word);
 	}
 	current_word = "";
@@ -38,9 +38,9 @@ bool LZW_compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
 		next_word.push_back((char)*i);
 		if (set_dict.find(next_word) == set_dict.end()){
 			set_dict.insert(next_word);
-			dict[next_word] = current_code;
+			dict1[next_word] = current_code;
 			current_code++;
-			long long code = dict[current_word];
+			long long code = dict1[current_word];
 			current_word = "";
 			current_word.push_back((char)*i);
 			prov.push_back(code); 	
@@ -49,7 +49,7 @@ bool LZW_compress(vector <Byte>& in_buf, vector <Byte>& out_buf){
 			current_word = next_word;
 		}
 	}
-	prov.push_back(dict[current_word]);
+	prov.push_back(dict1[current_word]);
 
 	Byte code_len = get_code_len(current_code);
 	out_buf.push_back(code_len);
